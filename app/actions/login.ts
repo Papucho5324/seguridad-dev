@@ -3,9 +3,12 @@ import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 
 export async function loginUser(prevState: { error?: string } | undefined, formData: FormData) {
-  try {
-    await signIn("credentials", Object.fromEntries(formData));
-  } catch (error) {
+try {
+  await signIn("credentials", {
+    ...Object.fromEntries(formData),
+    redirectTo: "/dashboard"
+  });
+} catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":

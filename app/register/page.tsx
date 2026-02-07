@@ -80,6 +80,9 @@ export default function RegisterPage() {
             >
               {isPending ? "Validando Seguridad..." : "Registrarse"}
             </button>
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+            ¿Ya tienes cuenta? <a href="/login" className="text-primary hover:underline">Iniciar sesion</a>
+          </p>
           </form>
         </div>
       </motion.div>

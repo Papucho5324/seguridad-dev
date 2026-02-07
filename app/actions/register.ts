@@ -33,7 +33,7 @@ export async function registerUser(prevState: unknown, formData: FormData) {
     });
   } catch (error: unknown) {
     // Manejo seguro del error de duplicados (P2002 es el código de Prisma para Unique Constraint)
-    if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'P2002') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === 'P2002') {
       return { error: "El usuario o email ya están registrados." };
     }
     return { error: "Error interno del servidor." };

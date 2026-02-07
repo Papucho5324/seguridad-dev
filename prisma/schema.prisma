@@ -11,7 +11,9 @@ model User {
   id            String   @id @default(cuid())
   username      String   @unique
   email         String   @unique
-  passwordHash  String   // Aquí guardaremos el hash de Argon2
+  passwordHash  String   
+  emailVerified     DateTime? // Si es null, no está verificado
+  verificationToken String?   @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

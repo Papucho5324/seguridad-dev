@@ -1,11 +1,12 @@
-import argon2 from "argon2";
+"use server";
 
-// Convierte texto plano en un Hash seguro
+import bcrypt from "bcryptjs";
+
 export async function hashPassword(password: string) {
-  return await argon2.hash(password);
+  const salt = await bcrypt.genSalt(12);
+  return bcrypt.hash(password, salt);
 }
 
-// Compara una contraseña ingresada con el Hash de la DB
 export async function verifyPassword(password: string, hash: string) {
-  return await argon2.verify(hash, password);
+  return bcrypt.compare(password, hash);
 }
