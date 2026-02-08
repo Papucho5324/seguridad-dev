@@ -3,6 +3,8 @@ import { useActionState } from "react";
 import { loginUser } from "@/app/actions/login";
 import RetroGrid from "../components/magicui/retro-grid";
 import { motion } from "framer-motion";
+import ConfettiOnSuccess from "../components/magicui/ConfettiOnSuccess";
+
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
@@ -18,6 +20,7 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         className="z-10 w-full max-w-md px-8"
       >
+        <ConfettiOnSuccess />
         <div className="rounded-2xl border border-border bg-card/50 p-8 backdrop-blur-xl shadow-2xl">
           <div className="mb-8 text-center">
             <h1 className="text-4xl font-bold tracking-tighter text-foreground">

@@ -39,5 +39,5 @@ export async function registerUser(prevState: unknown, formData: FormData) {
     return { error: "Error interno del servidor." };
   }
 
-  redirect("/login");
+  redirect("/login?registered=success");
 }

@@ -2,28 +2,41 @@ import { auth, signOut } from "@/auth";
 import RetroGrid from "../components/magicui/retro-grid";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { EmailVerificationBanner } from "../components/magicui/email-verification-banner";
+import { SuccessConfetti } from "../components/dashboard/success-confetti";
+import { Suspense } from "react"; // Necesario para useSearchParams
+
 
 export default async function DashboardPage() {
   const session = await auth();
 
-  // Redirección de seguridad en el servidor
-  if (!session || !session.user) {
+// 1. Verificación estricta de sesión
+  if (!session?.user?.id) {
     redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  // 2. Ahora session.user.id ya no será undefined
+  const user = await prisma.user.findUnique({ 
+    where: { id: session.user.id } 
+  });
+
+  // 3. Manejo por si el usuario fue borrado de la DB pero su sesión sigue activa
+  if (!user) {
+    redirect("/login");
+  }
+
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background p-6">
       <RetroGrid />
-      {!user?.emailVerified && (
-      <div className="bg-yellow-500/10 border-b border-yellow-500/20 p-2 text-center text-sm text-yellow-600 dark:text-yellow-400 backdrop-blur-md">
-        ⚠️ Tu correo no ha sido verificado. 
-        <button className="ml-2 underline font-bold hover:text-yellow-500">
-          Reenviar enlace de activación
-        </button>
-      </div>
-    )}
+
+      <Suspense fallback={null}>
+        <SuccessConfetti />
+      </Suspense>
+      {/* El código del Dashboard se mantiene limpio */}
+      {!user.emailVerified && (
+        <EmailVerificationBanner email={user.email} />
+      )}
     {/* Resto de tu Dashboard */}
       
       <div className="z-10 w-full max-w-5xl space-y-8">
