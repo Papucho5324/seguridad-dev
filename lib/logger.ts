@@ -8,7 +8,7 @@ export async function createLog(userId: string | null, action: string, entity: s
         userId: userId === "SYSTEM" || userId === "unknown" ? null : userId,
         action,
         entity,
-        details,
+        details: details || {},
       },
     });
   } catch (error) {
