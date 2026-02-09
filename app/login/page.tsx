@@ -6,10 +6,13 @@ import { motion } from "framer-motion";
 import ConfettiOnSuccess from "../components/magicui/ConfettiOnSuccess";
 
 import { cn } from "@/lib/utils";
+import { isUserLocked } from "@/lib/logger";
+import { LoginButton } from "../components/magicui/LoginButton";
 
 export default function LoginPage() {
   // state contendrá el error si las credenciales fallan
   const [state, formAction, isPending] = useActionState(loginUser, { error: "" });
+  const isLocked = state?.error?.includes("Demasiados intentos");
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background">
@@ -58,12 +61,7 @@ export default function LoginPage() {
               </div>
             )}
 
-            <button 
-              disabled={isPending}
-              className="relative w-full overflow-hidden rounded-lg bg-primary px-4 py-2 text-primary-foreground font-medium transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
-            >
-              {isPending ? "Verificando..." : "Entrar"}
-            </button>
+            <LoginButton initiallyLocked={isLocked || false} />
           </form>
           
           <p className="mt-4 text-center text-xs text-muted-foreground">

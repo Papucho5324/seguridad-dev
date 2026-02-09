@@ -16,4 +16,18 @@ model User {
   verificationToken String?   @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  logs AuditLog[] 
 }
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?   // Quién realizó la acción
+  action    String   // Ejemplo: "UPDATE_USER", "VERIFY_EMAIL", "LOGIN"
+  entity    String   // Qué tabla se afectó (ej: "User")
+  details   Json?    // Datos técnicos (IP, navegador, o valores previos)
+  createdAt DateTime @default(now()) // Cuándo ocurrió
+
+  user      User?     @relation(fields: [userId], references: [id])
+}
+

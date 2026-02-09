@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth-utils";
 import { registerSchema } from "@/lib/zod";
 import { redirect } from "next/navigation";
+import { createLog } from "@/lib/logger";
 
 export async function registerUser(prevState: unknown, formData: FormData) {
   const data = Object.fromEntries(formData);
@@ -24,13 +25,16 @@ export async function registerUser(prevState: unknown, formData: FormData) {
     const passwordHash = await hashPassword(password);
 
     // 4. Guardar
-    await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         username,
         email,
         passwordHash,
       },
     });
+    await createLog(newUser.id, "USER_REGISTERED", "User", { 
+  username: newUser.username 
+});
   } catch (error: unknown) {
     // Manejo seguro del error de duplicados (P2002 es el código de Prisma para Unique Constraint)
     if (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === 'P2002') {

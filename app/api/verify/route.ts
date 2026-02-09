@@ -1,3 +1,4 @@
+import { createLog } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
@@ -26,6 +27,11 @@ export async function GET(request: Request) {
         },
       });
       success = true;
+
+      await createLog(user.id, "EMAIL_VERIFIED", "User", { 
+        method: "Email Link", 
+        tokenUsed: token 
+      });
     }
   } catch (error) {
     console.error("Error en la base de datos:", error);

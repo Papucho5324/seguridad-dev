@@ -1,22 +1,40 @@
 "use server";
 import { signIn } from "@/auth";
+import { createLog, isUserLocked } from "@/lib/logger";
 import { AuthError } from "next-auth";
 
 export async function loginUser(prevState: { error?: string } | undefined, formData: FormData) {
-try {
-  await signIn("credentials", {
-    ...Object.fromEntries(formData),
-    redirectTo: "/dashboard"
-  });
-} catch (error) {
+  const data = Object.fromEntries(formData);
+  const username = data.username as string; // Extraemos el intento de usuario
+  const locked = await isUserLocked(username);
+if (locked) {
+  return { error: "Demasiados intentos. Acceso bloqueado por 60 segundos." };
+}
+
+  try {
+    await signIn("credentials", {
+      ...data,
+      redirectTo: "/dashboard"
+    });
+  } catch (error) {
     if (error instanceof AuthError) {
+      // 1. Registro de Intento Fallido
+      // Usamos "SYSTEM" o "ANONYMOUS" si no hay ID, pero guardamos el 'username' intentado en detalles
+      await createLog("SYSTEM", "LOGIN_FAILED", "User", {
+        attemptedUsername: username,
+        reason: "Invalid credentials",
+        ip: "Registrar IP aquí si es posible" 
+      });
+
       switch (error.type) {
         case "CredentialsSignin":
-          return { error: "Credenciales inválidas." };
+          return { error: "Usuario o contraseña incorrectos." };
         default:
-          return { error: "Algo salió mal en el servidor." };
+          return { error: "Error de autenticación. Intente más tarde." };
       }
     }
-    throw error; // Necesario para que Next.js maneje la redirección
+    // IMPORTANTE: No pongas logs después de 'throw error' porque el redireccionamiento 
+    // de Next.js también se lanza como un error técnico.
+    throw error; 
   }
 }
