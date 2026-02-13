@@ -35,7 +35,7 @@ export async function resendVerificationEmail() {
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
           <h2 style="color: #333;">Hola, ${session.user.name || "Usuario"}</h2>
-          <p>Has solicitado verificar tu correo para tu cuenta de estudiante (ID: 23110805).</p>
+          <p>Has solicitado verificar tu correo para tu cuenta por motivos de seguridad.</p>
           <p>Haz clic en el botón de abajo para activar tu cuenta de forma segura:</p>
           <div style="text-align: center; margin: 30px 0;">
             <a href="${verificationLink}" 

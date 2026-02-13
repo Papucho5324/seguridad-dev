@@ -10,11 +10,11 @@ export default function Home() {
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background">
       {/* Aquí irían tus componentes de Magic UI como RetroGrid o Meteors */}
       <div className="z-10 whitespace-pre-wrap text-center text-5xl font-medium tracking-tighter text-black dark:text-white">
-        Proyecto con Magic UI
+        Vendeme un cigarro suelto
       </div>
       <RetroGrid />
       <p className="mt-4 text-black">
-        Next.js + Tailwind CSS + Framer Motion
+        No vendo cigarros sueltos
       </p>
       
       <div className="mt-8 flex gap-4">

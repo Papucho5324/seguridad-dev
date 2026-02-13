@@ -1,34 +1,77 @@
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // <--- Añade esta línea
+  directUrl = env("DIRECT_URL")
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id            String   @id @default(cuid())
-  username      String   @unique
-  email         String   @unique
-  passwordHash  String   
-  emailVerified     DateTime? // Si es null, no está verificado
-  verificationToken String?   @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  logs AuditLog[] 
+// --- ENUMS ---
+enum Role {
+  ADMIN
+  OPERADOR
 }
 
+// --- MODELOS DE IDENTIDAD ---
+model User {
+  id            String    @id @default(cuid())
+  username      String    @unique
+  passwordHash  String
+  email         String?   @unique
+  emailVerified Boolean   @default(false)
+  
+  // RS-02: Control de acceso basado en roles
+  role          Role      @default(OPERADOR)
+  
+  // Relaciones
+  logs          AuditLog[]
+  productions   ProductionRecord[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// --- MODELOS DE GESTIÓN (MANAGEMENT) ---
+model Machine {
+  id          Int                @id @default(autoincrement())
+  name        String             @unique // Ejemplo: "MVS2", "SP01"
+  description String?            
+  status      String             @default("ACTIVE") // ACTIVE, MAINTENANCE, INACTIVE
+  
+  // Relación con producción
+  productions ProductionRecord[]
+  
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+// --- MODELOS DE OPERACIÓN ---
+model ProductionRecord {
+  id              String   @id @default(cuid())
+  piecesProduced  Int
+  hourSlot        DateTime // Registro HxH
+  status          String   @default("NORMAL")
+  
+  // RS-03: Trazabilidad (Vinculación con Máquina y Operador)
+  machineId       Int
+  machine         Machine  @relation(fields: [machineId], references: [id])
+  
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  createdAt       DateTime @default(now())
+}
+
+// --- MODELO DE AUDITORÍA ---
 model AuditLog {
   id        String   @id @default(cuid())
-  userId    String?   // Quién realizó la acción
-  action    String   // Ejemplo: "UPDATE_USER", "VERIFY_EMAIL", "LOGIN"
-  entity    String   // Qué tabla se afectó (ej: "User")
-  details   Json?    // Datos técnicos (IP, navegador, o valores previos)
-  createdAt DateTime @default(now()) // Cuándo ocurrió
+  userId    String?  
+  action    String   // Acciones críticas: "CREATE_MACHINE", "DELETE_USER"
+  entity    String   // "Machine", "User", "ProductionRecord"
+  details   Json?    // IP, Navegador, Datos previos
+  createdAt DateTime @default(now())
 
-  user      User?     @relation(fields: [userId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id])
 }
-

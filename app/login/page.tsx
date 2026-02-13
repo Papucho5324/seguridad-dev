@@ -6,6 +6,8 @@ import RetroGrid from "../components/magicui/retro-grid";
 import { motion } from "framer-motion";
 import ConfettiOnSuccess from "../components/magicui/ConfettiOnSuccess";
 import { LoginButton } from "../components/magicui/LoginButton";
+import { BorderBeam } from "@/components/ui/border-beam";
+
 
 export default function LoginPage() {
   // 1. Estado de la Server Action
@@ -82,6 +84,7 @@ export default function LoginPage() {
             ¿No tienes cuenta? <a href="/register" className="text-primary hover:underline">Regístrate aquí</a>
           </p>
         </div>
+
       </motion.div>
     </main>
   );

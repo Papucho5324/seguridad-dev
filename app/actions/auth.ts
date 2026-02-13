@@ -17,7 +17,7 @@ export async function signUp(formData: FormData) {
   // 2. Cifrar la contraseña
   const passwordHash = await hashPassword(password);
 
-  // 3. Guardar en Supabase vía Prisma
+  // 3. Guardar en Neon DB vía Prisma
   try {
     const user = await prisma.user.create({
       data: {
